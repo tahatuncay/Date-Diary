@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Date Diary — Birlikte Keşfediyoruz, Birlikte Hatırlıyoruz</title>
+  <meta name="description"
+    content="Birlikte gittiğiniz mekanları ve izlediğiniz dizileri/filmleri kaydedin. Çiftler için özel dijital günlük.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style type="text/tailwindcss">
+    @theme {
+      --color-blush: #FFF0F2;
+      --color-blush-dark: #FFE0E5;
+      --color-butter: #FFF9D6;
+      --color-butter-dark: #FFF1A8;
+      --color-butter-deep: #FFE566;
+      --color-ink: #332225;
+      --color-ink-light: #66484D;
+      --color-ink-muted: #997D82;
+      --color-rose-accent: #E8818A;
+      --color-rose-soft: #F2A5AC;
+      --font-display: 'Playfair Display', serif;
+      --font-body: 'Inter', sans-serif;
+    }
+  </style>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #FFF0F2;
+      color: #332225;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #FFF0F2;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #F2A5AC;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #E8818A;
+    }
+
+    /* Star rating */
+    .star-rating {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+    }
+
+    .star {
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: #FFE0E5;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .star.filled {
+      color: #FFB800;
+    }
+
+    .star:hover {
+      transform: scale(1.2);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes heartBeat {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      25% {
+        transform: scale(1.15);
+      }
+
+      50% {
+        transform: scale(1);
+      }
+
+      75% {
+        transform: scale(1.1);
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-6px);
+      }
+    }
+
+    .animate-fade-in-up {
+      animation: fadeInUp 0.5s ease forwards;
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    .animate-slide-down {
+      animation: slideDown 0.3s ease forwards;
+    }
+
+    .animate-heart {
+      animation: heartBeat 1.5s ease infinite;
+    }
+
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    /* Card stagger */
+    .card-item:nth-child(1) {
+      animation-delay: 0.05s;
+    }
+
+    .card-item:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+
+    .card-item:nth-child(3) {
+      animation-delay: 0.15s;
+    }
+
+    .card-item:nth-child(4) {
+      animation-delay: 0.2s;
+    }
+
+    .card-item:nth-child(5) {
+      animation-delay: 0.25s;
+    }
+
+    /* Tab indicator animation */
+    .tab-indicator {
+      transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1), width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+      opacity: 0;
+      z-index: 100;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Delete confirmation overlay */
+    .delete-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(51, 34, 37, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 90;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .delete-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Input focus ring */
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(232, 129, 138, 0.25);
+      border-color: #E8818A !important;
+    }
+
+    /* Placeholder */
+    ::placeholder {
+      color: #997D82;
+    }
+
+    /* Smooth tab content */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.35s ease;
+    }
+
+    /* Rating display dots */
+    .rating-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #FFE0E5;
+      transition: background 0.2s ease;
+    }
+
+    .rating-dot.filled {
+      background: #FFB800;
+    }
+
+    /* Auth: admin-only elements hidden by default */
+    .admin-only {
+      display: none !important;
+    }
+
+    body.is-admin .admin-only {
+      display: revert !important;
+    }
+
+    /* Login overlay */
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(51, 34, 37, 0.4);
+      backdrop-filter: blur(6px);
+      z-index: 95;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .login-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Password input shake on error */
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20% {
+        transform: translateX(-8px);
+      }
+
+      40% {
+        transform: translateX(8px);
+      }
+
+      60% {
+        transform: translateX(-6px);
+      }
+
+      80% {
+        transform: translateX(6px);
+      }
+    }
+
+    .shake {
+      animation: shake 0.4s ease;
+    }
+
+    /* Admin badge pulse */
+    @keyframes badgePulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(232, 129, 138, 0.4);
+      }
+
+      50% {
+        box-shadow: 0 0 0 6px rgba(232, 129, 138, 0);
+      }
+    }
+  </style>
+</head>
+
+<body class="antialiased">
+
+  <!-- Header -->
+  <header class="pt-8 pb-4 px-4 text-center relative overflow-hidden">
+    <!-- Decorative floating elements -->
+    <div class="absolute top-4 left-[10%] text-3xl opacity-30 animate-float" style="animation-delay: 0s;">💕</div>
+    <div class="absolute top-8 right-[12%] text-2xl opacity-20 animate-float" style="animation-delay: 1s;">✨</div>
+    <div class="absolute top-16 left-[25%] text-xl opacity-15 animate-float" style="animation-delay: 2s;">🌸</div>
+
+    <!-- Admin Login / Logout Button -->
+    <div class="absolute top-4 right-4 z-10">
+      <button id="auth-btn" onclick="handleAuthClick()"
+        class="bg-butter/80 hover:bg-butter border border-butter-dark/40 text-ink-light text-xs font-medium px-3.5 py-2 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-1.5 shadow-sm hover:shadow-md backdrop-blur-sm">
+        <span id="auth-btn-icon">🔐</span>
+        <span id="auth-btn-text">Yönetici Girişi</span>
+      </button>
+    </div>
+
+    <div class="animate-heart inline-block text-4xl mb-2">💗</div>
+    <h1 class="font-[Playfair_Display] text-3xl md:text-4xl font-semibold text-ink tracking-tight">
+      Date Diary
+    </h1>
+    <p class="text-ink-muted text-sm mt-1.5 font-light tracking-wide">Birlikte Keşfediyoruz, Birlikte Hatırlıyoruz</p>
+    <!-- Visitor mode badge -->
+    <div id="visitor-badge"
+      class="inline-flex items-center gap-1 mt-2 bg-butter/60 border border-butter-dark/30 text-ink-muted text-[10px] font-medium px-2.5 py-1 rounded-full uppercase tracking-widest">
+      👁️ Salt Okunur Mod
+    </div>
+    <div id="admin-badge"
+      class="hidden inline-flex items-center gap-1 mt-2 bg-rose-accent/15 border border-rose-accent/30 text-rose-accent text-[10px] font-medium px-2.5 py-1 rounded-full uppercase tracking-widest"
+      style="animation: badgePulse 2s ease infinite;">
+      ✏️ Yönetici Modu
+    </div>
+  </header>
+
+  <!-- Tab Navigation -->
+  <nav id="tab-nav" class="sticky top-0 z-50 bg-blush/80 backdrop-blur-xl border-b border-blush-dark/50 px-4">
+    <div class="max-w-2xl mx-auto relative">
+      <div class="flex">
+        <button id="tab-places"
+          class="tab-btn flex-1 py-3.5 text-sm font-medium text-ink transition-colors duration-200 relative"
+          data-tab="places" aria-selected="true" role="tab">
+          <span class="flex items-center justify-center gap-2">
+            <span class="text-lg">🍽️</span>
+            <span>Yemek Mekanları</span>
+          </span>
+        </button>
+        <button id="tab-shows"
+          class="tab-btn flex-1 py-3.5 text-sm font-medium text-ink-muted transition-colors duration-200 relative"
+          data-tab="shows" aria-selected="false" role="tab">
+          <span class="flex items-center justify-center gap-2">
+            <span class="text-lg">🎬</span>
+            <span>Dizi & Filmler</span>
+          </span>
+        </button>
+      </div>
+      <!-- Animated tab indicator -->
+      <div id="tab-indicator" class="tab-indicator absolute bottom-0 h-[3px] bg-rose-accent rounded-full"
+        style="left: 0; width: 50%;"></div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="max-w-2xl mx-auto px-4 pt-6 pb-28">
+
+    <!-- ========== PLACES TAB ========== -->
+    <section id="content-places" class="tab-content active">
+      <!-- Add Form (Admin Only) -->
+      <div
+        class="admin-only bg-butter/70 rounded-2xl p-5 md:p-6 shadow-sm border border-butter-dark/30 mb-6 animate-fade-in-up">
+        <h2 class="font-[Playfair_Display] text-lg font-semibold text-ink mb-4 flex items-center gap-2">
+          <span>📍</span> Yeni Mekan Ekle
+        </h2>
+        <form id="place-form" class="space-y-4" novalidate>
+          <div>
+            <label for="place-name"
+              class="block text-xs font-medium text-ink-light mb-1.5 uppercase tracking-wider">Mekan Adı</label>
+            <input type="text" id="place-name" name="place-name" required placeholder="örn. Nusr-Et Steakhouse"
+              class="w-full bg-white/80 border border-blush-dark/40 rounded-xl px-4 py-3 text-ink text-sm placeholder:text-ink-muted/60 transition-all duration-200 font-body min-h-[48px]">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="place-city"
+                class="block text-xs font-medium text-ink-light mb-1.5 uppercase tracking-wider">İl</label>
+              <input type="text" id="place-city" name="place-city" required placeholder="örn. İstanbul"
+                class="w-full bg-white/80 border border-blush-dark/40 rounded-xl px-4 py-3 text-ink text-sm placeholder:text-ink-muted/60 transition-all duration-200 min-h-[48px]">
+            </div>
+            <div>
+              <label for="place-district"
+                class="block text-xs font-medium text-ink-light mb-1.5 uppercase tracking-wider">İlçe</label>
+              <input type="text" id="place-district" name="place-district" required placeholder="örn. Beşiktaş"
+                class="w-full bg-white/80 border border-blush-dark/40 rounded-xl px-4 py-3 text-ink text-sm placeholder:text-ink-muted/60 transition-all duration-200 min-h-[48px]">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="place-date"
+                class="block text-xs font-medium text-ink-light mb-1.5 uppercase tracking-wider">Gitme Tarihi</label>
+              <input type="date" id="place-date" name="place-date" required
+                class="w-full bg-white/80 border border-blush-dark/40 rounded-xl px-4 py-3 text-ink text-sm transition-all duration-200 min-h-[48px]">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-ink-light mb-1.5 uppercase tracking-wider">Puan (10
+                üzerinden)</label>
+              <div class="flex items-center gap-1.5">
+                <div id="place-stars" class="star-rating" data-rating="0">
+                  <!-- Stars injected by JS -->
+                </div>
+                <span id="place-rating-label"
+                  class="text-xs font-semibold text-ink-muted ml-1 min-w-[28px] text-center">—</span>
+              </div>
+            </div>
+          </div>
+          <button type="submit" id="add-place-btn"
+            class="w-full bg-rose-accent hover:bg-rose-accent/90 active:scale-[0.98] text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg text-sm tracking-wide cursor-pointer min-h-[48px]">
+            ✨ Mekan Ekle
+          </button>
+        </form>
+      </div>
+
+      <!-- Stats -->
+      <div id="places-stats" class="hidden mb-4 animate-fade-in">
+        <div class="flex items-center justify-between">
+          <p class="text-xs text-ink-muted font-medium uppercase tracking-wider">
+            Toplam <span id="places-count" class="text-rose-accent font-bold">0</span> mekan keşfedildi
+          </p>
+          <div class="flex items-center gap-1 text-xs text-ink-muted">
+            <span>Ort. Puan:</span>
+            <span id="places-avg" class="font-bold text-rose-accent">0</span>
+            <span>/10</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sort & Filter -->
+      <div id="places-controls" class="hidden mb-4 flex items-center gap-2">
+        <select id="places-sort"
+          class="text-xs bg-butter/60 border border-butter-dark/40 rounded-lg px-3 py-2 text-ink-light cursor-pointer transition-all duration-200 min-h-[36px]">
+          <option value="date-desc">En Yeni</option>
+          <option value="date-asc">En Eski</option>
+          <option value="rating-desc">En Yüksek Puan</option>
+          <option value="rating-asc">En Düşük Puan</option>
+          <option value="name-asc">A → Z</option>
+        </select>
+      </div>
+
+      <!-- Places List -->
+      <div id="places-list" class="space-y-3">
+        <!-- Cards rendered by JS -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="places-empty" class="text-center py-16 animate-fade-in">
+        <div class="text-5xl mb-4 opacity-40">🍽️</div>
+        <p class="text-ink-muted text-sm font-light">Henüz bir mekan eklenmedi</p>
+        <p class="text-ink-muted/60 text-xs mt-1">İlk mekanınızı ekleyerek başlayın!</p>
+      </div>
+    </section>
+
+    <!-- ========== SHOWS TAB ========== -->
+    <section id="content-shows" class="tab-content">
+      <!-- Add Form (Admin Only) -->
+      <div
+        class="admin-only bg-butter/70 rounded-2xl p-5 md:p-6 shadow-sm border border-butter-dark/30 mb-6 animate-fade-in-up">
+        <h2 class="font-[Playfair_Display] text-lg font-semibold text-ink mb-4 flex items-center gap-2">
+          <span>🎞️</span> Yeni Dizi / Film Ekle
+        </h2>
+        <form id="show-form" class="space-y-4" novalidate>
+          <div>
+            <label for="show-name" class="block text-xs font-medium text-ink-light mb-1.5 uppercase tracking-wider">Dizi
+              / Film Adı</label>
+            <input type="text" id="show-name" name="show-name" required placeholder="örn. Aşk-ı Memnu"
+              class="w-full bg-white/80 border border-blush-dark/40 rounded-xl px-4 py-3 text-ink text-sm placeholder:text-ink-muted/60 transition-all duration-200 min-h-[48px]">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="show-type"
+                class="block text-xs font-medium text-ink-light mb-1.5 uppercase tracking-wider">Tür</label>
+              <select id="show-type" name="show-type" required
+                class="w-full bg-white/80 border border-blush-dark/40 rounded-xl px-4 py-3 text-ink text-sm transition-all duration-200 cursor-pointer min-h-[48px]">
+                <option value="" disabled selected>Seçiniz</option>
+                <option value="dizi">📺 Dizi</option>
+                <option value="film">🎬 Film</option>
+              </select>
+            </div>
+            <div>
+              <label for="show-date"
+                class="block text-xs font-medium text-ink-light mb-1.5 uppercase tracking-wider">İzleme Tarihi</label>
+              <input type="date" id="show-date" name="show-date" required
+                class="w-full bg-white/80 border border-blush-dark/40 rounded-xl px-4 py-3 text-ink text-sm transition-all duration-200 min-h-[48px]">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-ink-light mb-1.5 uppercase tracking-wider">Puan (10
+              üzerinden)</label>
+            <div class="flex items-center gap-1.5">
+              <div id="show-stars" class="star-rating" data-rating="0">
+                <!-- Stars injected by JS -->
+              </div>
+              <span id="show-rating-label"
+                class="text-xs font-semibold text-ink-muted ml-1 min-w-[28px] text-center">—</span>
+            </div>
+          </div>
+          <button type="submit" id="add-show-btn"
+            class="w-full bg-rose-accent hover:bg-rose-accent/90 active:scale-[0.98] text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg text-sm tracking-wide cursor-pointer min-h-[48px]">
+            ✨ İçerik Ekle
+          </button>
+        </form>
+      </div>
+
+      <!-- Stats -->
+      <div id="shows-stats" class="hidden mb-4 animate-fade-in">
+        <div class="flex items-center justify-between">
+          <p class="text-xs text-ink-muted font-medium uppercase tracking-wider">
+            Toplam <span id="shows-count" class="text-rose-accent font-bold">0</span> içerik izlendi
+          </p>
+          <div class="flex items-center gap-1 text-xs text-ink-muted">
+            <span>Ort. Puan:</span>
+            <span id="shows-avg" class="font-bold text-rose-accent">0</span>
+            <span>/10</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sort & Filter -->
+      <div id="shows-controls" class="hidden mb-4 flex items-center gap-2">
+        <select id="shows-sort"
+          class="text-xs bg-butter/60 border border-butter-dark/40 rounded-lg px-3 py-2 text-ink-light cursor-pointer transition-all duration-200 min-h-[36px]">
+          <option value="date-desc">En Yeni</option>
+          <option value="date-asc">En Eski</option>
+          <option value="rating-desc">En Yüksek Puan</option>
+          <option value="rating-asc">En Düşük Puan</option>
+          <option value="name-asc">A → Z</option>
+        </select>
+        <select id="shows-filter"
+          class="text-xs bg-butter/60 border border-butter-dark/40 rounded-lg px-3 py-2 text-ink-light cursor-pointer transition-all duration-200 min-h-[36px]">
+          <option value="all">Tümü</option>
+          <option value="dizi">📺 Diziler</option>
+          <option value="film">🎬 Filmler</option>
+        </select>
+      </div>
+
+      <!-- Shows List -->
+      <div id="shows-list" class="space-y-3">
+        <!-- Cards rendered by JS -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="shows-empty" class="text-center py-16 animate-fade-in">
+        <div class="text-5xl mb-4 opacity-40">🎬</div>
+        <p class="text-ink-muted text-sm font-light">Henüz bir dizi veya film eklenmedi</p>
+        <p class="text-ink-muted/60 text-xs mt-1">Birlikte izlediğiniz ilk içeriği ekleyin!</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">
+    <div class="bg-ink text-white text-sm font-medium px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2">
+      <span id="toast-icon">✅</span>
+      <span id="toast-msg">Başarıyla eklendi!</span>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation -->
+  <div id="delete-overlay" class="delete-overlay">
+    <div class="bg-white rounded-2xl p-6 mx-4 max-w-sm w-full shadow-2xl animate-slide-down text-center">
+      <div class="text-4xl mb-3">🗑️</div>
+      <h3 class="font-[Playfair_Display] text-lg font-semibold text-ink mb-2">Silmek istediğinize emin misiniz?</h3>
+      <p id="delete-item-name" class="text-sm text-ink-muted mb-5">Bu öğe</p>
+      <div class="flex gap-3">
+        <button id="delete-cancel"
+          class="flex-1 py-2.5 px-4 rounded-xl border border-blush-dark/40 text-ink-light text-sm font-medium hover:bg-blush-dark/20 transition-colors cursor-pointer min-h-[44px]">
+          Vazgeç
+        </button>
+        <button id="delete-confirm"
+          class="flex-1 py-2.5 px-4 rounded-xl bg-red-400 text-white text-sm font-medium hover:bg-red-500 transition-colors cursor-pointer min-h-[44px]">
+          Evet, Sil
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="login-overlay" class="login-overlay">
+    <div class="bg-white rounded-2xl p-6 mx-4 max-w-sm w-full shadow-2xl animate-slide-down text-center">
+      <div class="text-4xl mb-3">🔐</div>
+      <h3 class="font-[Playfair_Display] text-lg font-semibold text-ink mb-1">Yönetici Girişi</h3>
+      <p class="text-xs text-ink-muted mb-5">Düzenleme yapmak için şifrenizi girin</p>
+      <form id="login-form" class="space-y-4" novalidate>
+        <div class="relative">
+          <input type="password" id="login-password" placeholder="Şifre" autocomplete="current-password"
+            class="w-full bg-blush/50 border border-blush-dark/40 rounded-xl px-4 py-3 text-ink text-sm placeholder:text-ink-muted/60 transition-all duration-200 min-h-[48px] pr-10">
+          <button type="button" id="toggle-password-visibility"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted/60 hover:text-ink-muted transition-colors cursor-pointer text-sm"
+            aria-label="Şifreyi göster">
+            👁️
+          </button>
+        </div>
+        <p id="login-error" class="text-red-400 text-xs hidden">Şifre yanlış, tekrar deneyin.</p>
+        <div class="flex gap-3">
+          <button type="button" id="login-cancel"
+            class="flex-1 py-2.5 px-4 rounded-xl border border-blush-dark/40 text-ink-light text-sm font-medium hover:bg-blush-dark/20 transition-colors cursor-pointer min-h-[44px]">
+            Vazgeç
+          </button>
+          <button type="submit" id="login-submit"
+            class="flex-1 py-2.5 px-4 rounded-xl bg-rose-accent text-white text-sm font-medium hover:bg-rose-accent/90 transition-colors cursor-pointer min-h-[44px]">
+            Giriş Yap
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    // ========================
+    // Supabase Bağlantısı
+    // ========================
+    const SUPABASE_URL = 'https://iddjrdpkhgovcqzoemnt.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkZGpyZHBraGdvdmNxem9lbW50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMjU5ODgsImV4cCI6MjA5NTcwMTk4OH0.4wE8NDH4QmTDSvWEp5igjZrRti6QwXzGnEk0pyyKZGs';
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ========================
+    // Auth System
+    // ========================
+    const AUTH_KEY = 'dateDiary_auth';
+
+    function isAdmin() {
+      return localStorage.getItem(AUTH_KEY) !== null;
+    }
+
+    function getAdminPassword() {
+      return localStorage.getItem(AUTH_KEY);
+    }
+
+    function setAdmin(password) {
+      if (password) {
+        localStorage.setItem(AUTH_KEY, password);
+      } else {
+        localStorage.removeItem(AUTH_KEY);
+      }
+      applyAuthState();
+    }
+
+    function applyAuthState() {
+      const admin = isAdmin();
+      const body = document.body;
+      const authBtn = document.getElementById('auth-btn');
+      const authBtnIcon = document.getElementById('auth-btn-icon');
+      const authBtnText = document.getElementById('auth-btn-text');
+      const visitorBadge = document.getElementById('visitor-badge');
+      const adminBadge = document.getElementById('admin-badge');
+
+      if (admin) {
+        body.classList.add('is-admin');
+        authBtnIcon.textContent = '🚪';
+        authBtnText.textContent = 'Çıkış Yap';
+        visitorBadge.classList.add('hidden');
+        adminBadge.classList.remove('hidden');
+      } else {
+        body.classList.remove('is-admin');
+        authBtnIcon.textContent = '🔐';
+        authBtnText.textContent = 'Yönetici Girişi';
+        visitorBadge.classList.remove('hidden');
+        adminBadge.classList.add('hidden');
+      }
+
+      loadPlaces();
+      loadShows();
+    }
+
+    function handleAuthClick() {
+      if (isAdmin()) {
+        setAdmin(null);
+        showToast('Çıkış yapıldı', '👋');
+      } else {
+        openLoginModal();
+      }
+    }
+
+    function openLoginModal() {
+      const overlay = document.getElementById('login-overlay');
+      const passwordInput = document.getElementById('login-password');
+      const errorMsg = document.getElementById('login-error');
+      errorMsg.classList.add('hidden');
+      passwordInput.value = '';
+      overlay.classList.add('active');
+      setTimeout(() => passwordInput.focus(), 100);
+    }
+
+    function closeLoginModal() {
+      document.getElementById('login-overlay').classList.remove('active');
+    }
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = document.getElementById('login-password').value;
+      const errorMsg = document.getElementById('login-error');
+      const passwordInput = document.getElementById('login-password');
+
+      if (!password) return;
+
+      const { data: isCorrect, error } = await _supabase.rpc('check_admin_password', { input_password: password });
+
+      if (!error && isCorrect) {
+        closeLoginModal();
+        setAdmin(password); // Şifreyi işlem yapmak için session bazlı tutuyoruz
+        showToast('Hoş geldiniz! 💕', '✨');
+      } else {
+        errorMsg.classList.remove('hidden');
+        passwordInput.classList.add('shake');
+        setTimeout(() => passwordInput.classList.remove('shake'), 400);
+      }
+    });
+
+    document.getElementById('login-cancel').addEventListener('click', closeLoginModal);
+
+    document.getElementById('login-overlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeLoginModal();
+    });
+
+    document.getElementById('toggle-password-visibility').addEventListener('click', () => {
+      const input = document.getElementById('login-password');
+      const btn = document.getElementById('toggle-password-visibility');
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    });
+
+    // ========================
+    // Data Layer
+    // ========================
+    let globalPlaces = [];
+    let globalShows = [];
+
+    async function loadPlaces() {
+      const { data, error } = await _supabase.from('places').select('*');
+      if (!error) {
+        globalPlaces = data;
+        renderPlaces();
+      }
+    }
+
+    async function loadShows() {
+      const { data, error } = await _supabase.from('shows').select('*');
+      if (!error) {
+        globalShows = data;
+        renderShows();
+      }
+    }
+
+    function generateId() {
+      return Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+    }
+
+    // ========================
+    // Star Rating Component
+    // ========================
+    function createStarRating(containerId, labelId) {
+      const container = document.getElementById(containerId);
+      const label = document.getElementById(labelId);
+      container.innerHTML = '';
+      for (let i = 1; i <= 10; i++) {
+        const star = document.createElement('span');
+        star.className = 'star';
+        star.textContent = '★';
+        star.dataset.value = i;
+        star.setAttribute('role', 'button');
+        star.setAttribute('aria-label', `${i} puan`);
+        star.addEventListener('click', () => {
+          container.dataset.rating = i;
+          updateStars(container, i);
+          label.textContent = i + '/10';
+        });
+        star.addEventListener('mouseenter', () => updateStars(container, i));
+        star.addEventListener('mouseleave', () => updateStars(container, parseInt(container.dataset.rating)));
+        container.appendChild(star);
+      }
+    }
+
+    function updateStars(container, value) {
+      const stars = container.querySelectorAll('.star');
+      stars.forEach((star, index) => {
+        star.classList.toggle('filled', index < value);
+      });
+    }
+
+    // ========================
+    // Tab System
+    // ========================
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const tabIndicator = document.getElementById('tab-indicator');
+
+    function switchTab(tabName) {
+      tabBtns.forEach(btn => {
+        const isActive = btn.dataset.tab === tabName;
+        btn.classList.toggle('text-ink', isActive);
+        btn.classList.toggle('text-ink-muted', !isActive);
+        btn.setAttribute('aria-selected', isActive);
+      });
+
+      tabContents.forEach(content => {
+        content.classList.toggle('active', content.id === `content-${tabName}`);
+      });
+
+      const activeBtn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+      if (activeBtn) {
+        const nav = document.querySelector('#tab-nav .flex');
+        const navRect = nav.getBoundingClientRect();
+        const btnRect = activeBtn.getBoundingClientRect();
+        tabIndicator.style.left = (btnRect.left - navRect.left) + 'px';
+        tabIndicator.style.width = btnRect.width + 'px';
+      }
+    }
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+
+    // ========================
+    // Toast Notification
+    // ========================
+    function showToast(message, icon = '✅') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = message;
+      document.getElementById('toast-icon').textContent = icon;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // ========================
+    // Delete System
+    // ========================
+    let pendingDelete = null;
+
+    function requestDelete(type, id, name) {
+      pendingDelete = { type, id };
+      document.getElementById('delete-item-name').textContent = `"${name}" silinecek`;
+      document.getElementById('delete-overlay').classList.add('active');
+    }
+
+    document.getElementById('delete-cancel').addEventListener('click', () => {
+      document.getElementById('delete-overlay').classList.remove('active');
+      pendingDelete = null;
+    });
+
+    document.getElementById('delete-confirm').addEventListener('click', async () => {
+      if (pendingDelete) {
+        const tableName = pendingDelete.type === 'place' ? 'places' : 'shows';
+
+        // Güvenli silme fonksiyonunu çağırıyoruz
+        const { data: isDeleted, error } = await _supabase.rpc('delete_item_secure', {
+          input_password: getAdminPassword(),
+          target_table: tableName,
+          target_id: pendingDelete.id
+        });
+
+        if (!error && isDeleted) {
+          if (pendingDelete.type === 'place') await loadPlaces();
+          else await loadShows();
+          showToast('Başarıyla silindi', '🗑️');
+        } else {
+          showToast('Silme yetkiniz yok veya bir hata oluştu', '⚠️');
+        }
+      }
+      document.getElementById('delete-overlay').classList.remove('active');
+      pendingDelete = null;
+    });
+
+    document.getElementById('delete-overlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        document.getElementById('delete-overlay').classList.remove('active');
+        pendingDelete = null;
+      }
+    });
+
+    // ========================
+    // Format Helpers
+    // ========================
+    function formatDate(dateStr) {
+      if (!dateStr) return '—';
+      const d = new Date(dateStr);
+      const months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+      return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    function ratingColor(rating) {
+      if (rating >= 8) return '#4CAF50';
+      if (rating >= 6) return '#FFB800';
+      if (rating >= 4) return '#FF9800';
+      return '#E8818A';
+    }
+
+    function ratingEmoji(rating) {
+      if (rating >= 9) return '🤩';
+      if (rating >= 7) return '😍';
+      if (rating >= 5) return '😊';
+      if (rating >= 3) return '😐';
+      return '😕';
+    }
+
+    // ========================
+    // Places
+    // ========================
+    const placeForm = document.getElementById('place-form');
+    const placesSort = document.getElementById('places-sort');
+
+    function getPlacesSorted() {
+      const sort = placesSort.value;
+      return [...globalPlaces].sort((a, b) => {
+        switch (sort) {
+          case 'date-desc': return new Date(b.date) - new Date(a.date);
+          case 'date-asc': return new Date(a.date) - new Date(b.date);
+          case 'rating-desc': return b.rating - a.rating;
+          case 'rating-asc': return a.rating - b.rating;
+          case 'name-asc': return a.name.localeCompare(b.name, 'tr');
+          default: return 0;
+        }
+      });
+    }
+
+    function renderPlaces() {
+      const data = getPlacesSorted();
+      const list = document.getElementById('places-list');
+      const empty = document.getElementById('places-empty');
+      const stats = document.getElementById('places-stats');
+      const controls = document.getElementById('places-controls');
+
+      if (data.length === 0) {
+        list.innerHTML = '';
+        empty.classList.remove('hidden');
+        stats.classList.add('hidden');
+        controls.classList.add('hidden');
+        return;
+      }
+
+      empty.classList.add('hidden');
+      stats.classList.remove('hidden');
+      controls.classList.remove('hidden');
+
+      document.getElementById('places-count').textContent = data.length;
+      const avg = (data.reduce((sum, p) => sum + p.rating, 0) / data.length).toFixed(1);
+      document.getElementById('places-avg').textContent = avg;
+
+      const adminMode = isAdmin();
+      list.innerHTML = data.map((place, i) => `
+        <div class="card-item bg-butter/60 border border-butter-dark/25 rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 animate-fade-in-up" style="opacity:0; animation-delay: ${i * 0.05}s;">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex-1 min-w-0">
+              <h3 class="font-semibold text-ink text-base truncate">${escapeHTML(place.name)}</h3>
+              <p class="text-ink-muted text-xs mt-1 flex items-center gap-1.5">
+                <span>📍</span>
+                <span>${escapeHTML(place.district)}, ${escapeHTML(place.city)}</span>
+              </p>
+              <p class="text-ink-muted/70 text-xs mt-1 flex items-center gap-1.5">
+                <span>📅</span>
+                <span>${formatDate(place.date)}</span>
+              </p>
+            </div>
+            <div class="flex flex-col items-end gap-2 shrink-0">
+              <div class="flex items-center gap-1.5">
+                <span class="text-lg">${ratingEmoji(place.rating)}</span>
+                <span class="text-xl font-bold" style="color: ${ratingColor(place.rating)}">${place.rating}</span>
+                <span class="text-xs text-ink-muted">/10</span>
+              </div>
+              ${adminMode ? `<button onclick="requestDelete('place', '${place.id}', '${escapeHTML(place.name).replace(/'/g, "\\'")}' )"
+                class="text-ink-muted/50 hover:text-red-400 transition-colors text-xs cursor-pointer p-1" aria-label="Sil">
+                🗑️
+              </button>` : ''}
+            </div>
+          </div>
+          <div class="flex gap-[3px] mt-3">
+            ${Array.from({ length: 10 }, (_, j) => `<div class="rating-dot ${j < place.rating ? 'filled' : ''}"></div>`).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    placeForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('place-name').value.trim();
+      const city = document.getElementById('place-city').value.trim();
+      const district = document.getElementById('place-district').value.trim();
+      const date = document.getElementById('place-date').value;
+      const rating = parseInt(document.getElementById('place-stars').dataset.rating);
+
+      if (!name || !city || !district || !date || !rating) {
+        showToast('Lütfen tüm alanları doldurun', '⚠️');
+        return;
+      }
+
+      // Güvenli mekan ekleme fonksiyonunu çağırıyoruz
+      const { data: isSaved, error } = await _supabase.rpc('insert_place_secure', {
+        input_password: getAdminPassword(),
+        p_id: generateId(),
+        p_name: name,
+        p_city: city,
+        p_district: district,
+        p_date: date,
+        p_rating: rating
+      });
+
+      if (!error && isSaved) {
+        placeForm.reset();
+        document.getElementById('place-stars').dataset.rating = '0';
+        updateStars(document.getElementById('place-stars'), 0);
+        document.getElementById('place-rating-label').textContent = '—';
+
+        await loadPlaces();
+        showToast(`"${name}" eklendi!`, '🎉');
+      } else {
+        showToast('Ekleme yetkiniz yok veya bir hata oluştu', '⚠️');
+      }
+    });
+
+    placesSort.addEventListener('change', renderPlaces);
+
+    // ========================
+    // Shows
+    // ========================
+    const showForm = document.getElementById('show-form');
+    const showsSort = document.getElementById('shows-sort');
+    const showsFilter = document.getElementById('shows-filter');
+
+    function getShowsSorted() {
+      let data = [...globalShows];
+      const filter = showsFilter.value;
+      if (filter !== 'all') data = data.filter(s => s.type === filter);
+      const sort = showsSort.value;
+      return data.sort((a, b) => {
+        switch (sort) {
+          case 'date-desc': return new Date(b.date) - new Date(a.date);
+          case 'date-asc': return new Date(a.date) - new Date(b.date);
+          case 'rating-desc': return b.rating - a.rating;
+          case 'rating-asc': return a.rating - b.rating;
+          case 'name-asc': return a.name.localeCompare(b.name, 'tr');
+          default: return 0;
+        }
+      });
+    }
+
+    function renderShows() {
+      const data = getShowsSorted();
+      const list = document.getElementById('shows-list');
+      const empty = document.getElementById('shows-empty');
+      const stats = document.getElementById('shows-stats');
+      const controls = document.getElementById('shows-controls');
+
+      if (globalShows.length === 0) {
+        list.innerHTML = '';
+        empty.classList.remove('hidden');
+        stats.classList.add('hidden');
+        controls.classList.add('hidden');
+        return;
+      }
+
+      empty.classList.add('hidden');
+      stats.classList.remove('hidden');
+      controls.classList.remove('hidden');
+
+      document.getElementById('shows-count').textContent = globalShows.length;
+      const avg = (globalShows.reduce((sum, s) => sum + s.rating, 0) / globalShows.length).toFixed(1);
+      document.getElementById('shows-avg').textContent = avg;
+
+      if (data.length === 0) {
+        list.innerHTML = `<div class="text-center py-10 text-ink-muted text-sm">Bu filtrede sonuç bulunamadı</div>`;
+        return;
+      }
+
+      const adminMode = isAdmin();
+      list.innerHTML = data.map((show, i) => `
+        <div class="card-item bg-butter/60 border border-butter-dark/25 rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 animate-fade-in-up" style="opacity:0; animation-delay: ${i * 0.05}s;">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs bg-blush px-2 py-0.5 rounded-full font-medium text-ink-light">
+                  ${show.type === 'dizi' ? '📺 Dizi' : '🎬 Film'}
+                </span>
+              </div>
+              <h3 class="font-semibold text-ink text-base truncate">${escapeHTML(show.name)}</h3>
+              <p class="text-ink-muted/70 text-xs mt-1 flex items-center gap-1.5">
+                <span>📅</span>
+                <span>${formatDate(show.date)}</span>
+              </p>
+            </div>
+            <div class="flex flex-col items-end gap-2 shrink-0">
+              <div class="flex items-center gap-1.5">
+                <span class="text-lg">${ratingEmoji(show.rating)}</span>
+                <span class="text-xl font-bold" style="color: ${ratingColor(show.rating)}">${show.rating}</span>
+                <span class="text-xs text-ink-muted">/10</span>
+              </div>
+              ${adminMode ? `<button onclick="requestDelete('show', '${show.id}', '${escapeHTML(show.name).replace(/'/g, "\\'")}' )"
+                class="text-ink-muted/50 hover:text-red-400 transition-colors text-xs cursor-pointer p-1" aria-label="Sil">
+                🗑️
+              </button>` : ''}
+            </div>
+          </div>
+          <div class="flex gap-[3px] mt-3">
+            ${Array.from({ length: 10 }, (_, j) => `<div class="rating-dot ${j < show.rating ? 'filled' : ''}"></div>`).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    showForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('show-name').value.trim();
+      const type = document.getElementById('show-type').value;
+      const date = document.getElementById('show-date').value;
+      const rating = parseInt(document.getElementById('show-stars').dataset.rating);
+
+      if (!name || !type || !date || !rating) {
+        showToast('Lütfen tüm alanları doldurun', '⚠️');
+        return;
+      }
+
+      // Güvenli dizi/film ekleme fonksiyonunu çağırıyoruz
+      const { data: isSaved, error } = await _supabase.rpc('insert_show_secure', {
+        input_password: getAdminPassword(),
+        p_id: generateId(),
+        p_name: name,
+        p_type: type,
+        p_date: date,
+        p_rating: rating
+      });
+
+      if (!error && isSaved) {
+        showForm.reset();
+        document.getElementById('show-stars').dataset.rating = '0';
+        updateStars(document.getElementById('show-stars'), 0);
+        document.getElementById('show-rating-label').textContent = '—';
+
+        await loadShows();
+        showToast(`"${name}" eklendi!`, '🎉');
+      } else {
+        showToast('Ekleme yetkiniz yok veya bir hata oluştu', '⚠️');
+      }
+    });
+
+    showsSort.addEventListener('change', renderShows);
+    showsFilter.addEventListener('change', renderShows);
+
+    // ========================
+    // XSS Prevention
+    // ========================
+    function escapeHTML(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // ========================
+    // Init
+    // ========================
+    function init() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('place-date').value = today;
+      document.getElementById('show-date').value = today;
+
+      createStarRating('place-stars', 'place-rating-label');
+      createStarRating('show-stars', 'show-rating-label');
+
+      applyAuthState();
+
+      requestAnimationFrame(() => switchTab('places'));
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+    window.addEventListener('resize', () => {
+      const activeTab = document.querySelector('.tab-btn[aria-selected="true"]');
+      if (activeTab) switchTab(activeTab.dataset.tab);
+    });
+  </script>
+</body>
+
+</html>
